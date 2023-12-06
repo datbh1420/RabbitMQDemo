@@ -1,8 +1,6 @@
-﻿using MassTransit;
-
-namespace Contract.Abstraction.Message
+﻿namespace Contract.Abstraction.Message
 {
-    [ExcludeFromTopology]
+    //[ExcludeFromTopology]
     public interface INotification : IMessage
     {
         public Guid Id { get; set; }

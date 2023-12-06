@@ -1,5 +1,8 @@
 ﻿using ConsumerAPI.DependencyInjection.Options;
+using ConsumerAPI.MessageBus.Consumers.Events;
+using Contract.Constants;
 using MassTransit;
+using RabbitMQ.Client;
 using System.Reflection;
 
 namespace ConsumerAPI.DependencyInjection.Extensions
@@ -28,35 +31,35 @@ namespace ConsumerAPI.DependencyInjection.Extensions
                         h.Password(masstransitConfiguration.Password);
                     });
                     // SmsNotification
-                    //bus.ReceiveEndpoint(masstransitConfiguration.SmsQueueName, re =>
-                    //{
-                    //    re.ConfigureConsumeTopology = false;
-                    //    re.ConfigureConsumer<SmsNotificationConsumer>(context);
+                    bus.ReceiveEndpoint(masstransitConfiguration.SmsQueueName, re =>
+                    {
+                        re.ConfigureConsumeTopology = false;
+                        re.ConfigureConsumer<SmsNotificationConsumer>(context);
 
-                    //    re.Bind(masstransitConfiguration.ExchangeName, e =>
-                    //    {
-                    //        e.Durable = true;
-                    //        e.AutoDelete = false;
-                    //        e.ExchangeType = ExchangeType.Topic;
+                        re.Bind(masstransitConfiguration.ExchangeName, e =>
+                        {
+                            e.Durable = true;
+                            e.AutoDelete = false;
+                            e.ExchangeType = ExchangeType.Topic;
 
-                    //        e.RoutingKey = NotificationType.sms;
-                    //    });
-                    //});
+                            e.RoutingKey = NotificationType.sms;
+                        });
+                    });
                     // EmailNotification
-                    //bus.ReceiveEndpoint(masstransitConfiguration.EmailQueueName, re =>
-                    //{
-                    //    re.ConfigureConsumeTopology = false;
-                    //    re.ConfigureConsumer<EmailNotificationConsumer>(context);
+                    bus.ReceiveEndpoint(masstransitConfiguration.EmailQueueName, re =>
+                    {
+                        re.ConfigureConsumeTopology = false;
+                        re.ConfigureConsumer<EmailNotificationConsumer>(context);
 
-                    //    re.Bind(masstransitConfiguration.ExchangeName, e =>
-                    //    {
-                    //        e.Durable = true;
-                    //        e.AutoDelete = false;
-                    //        e.ExchangeType = ExchangeType.Topic;
+                        re.Bind(masstransitConfiguration.ExchangeName, e =>
+                        {
+                            e.Durable = true;
+                            e.AutoDelete = false;
+                            e.ExchangeType = ExchangeType.Topic;
 
-                    //        e.RoutingKey = MessageType.email;
-                    //    });
-                    //});
+                            e.RoutingKey = NotificationType.email;
+                        });
+                    });
 
                     bus.MessageTopology.SetEntityNameFormatter(new KebabCaseEntityNameFormatter());
 

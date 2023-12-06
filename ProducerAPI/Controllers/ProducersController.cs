@@ -13,8 +13,8 @@ namespace ProducerAPI.Controllers
         private readonly IBus bus;
         public ProducersController(IPublishEndpoint publishEndpoint, IBus bus)
         {
-            this.publishEndpoint = publishEndpoint;
-            this.bus = bus;
+            this.publishEndpoint = publishEndpoint; // Not generate queue
+            this.bus = bus; // Auto generate queue
         }
 
         [HttpPost()]
@@ -33,40 +33,40 @@ namespace ProducerAPI.Controllers
             return Accepted();
         }
 
-        //[HttpPost()]
-        //public async Task<IActionResult> PublishEmailNotification()
-        //{
-        //    var message = new DomainEvent.EmailNotification
-        //    {
-        //        Id = Guid.NewGuid(),
-        //        Title = "Email Notification",
-        //        Content = "Content",
-        //        Type = MessageType.email,
-        //        TransactionId = Guid.NewGuid(),
-        //    };
-        //    using var cancelToken = new CancellationTokenSource(TimeSpan.FromSeconds(30));
-        //    await publishEndpoint.Publish(message, cancelToken.Token);
-        //    return Accepted();
-        //}
+        [HttpPost()]
+        public async Task<IActionResult> PublishEmailNotification()
+        {
+            var message = new DomainEvent.EmailNotification
+            {
+                Id = Guid.NewGuid(),
+                Title = "Email Notification",
+                Content = "Content",
+                Type = NotificationType.email,
+                TransactionId = Guid.NewGuid(),
+            };
+            using var cancelToken = new CancellationTokenSource(TimeSpan.FromSeconds(30));
+            await publishEndpoint.Publish(message, cancelToken.Token);
+            return Accepted();
+        }
 
 
-        //[HttpPost()]
-        //public async Task<IActionResult> SendNotification()
-        //{
-        //    var sendNotification = new Command.SendNotification
-        //    {
-        //        Id = Guid.NewGuid(),
-        //        Content = "Content",
-        //        Title = "Message",
-        //        Type = MessageType.email,
-        //        TransactionId = Guid.NewGuid()
-        //    };
-        //    using var cancelToken = new CancellationTokenSource(TimeSpan.FromSeconds(30));
-        //    var endpoint = await bus.GetSendEndpoint(Address<Command.SendNotification>()); //send-notification
-        //    await endpoint.Send(sendNotification, cancelToken.Token);
+        [HttpPost()]
+        public async Task<IActionResult> SendNotification()
+        {
+            var sendNotification = new Command.SendNotification
+            {
+                Id = Guid.NewGuid(),
+                Content = "Content",
+                Title = "Message",
+                Type = NotificationType.email,
+                TransactionId = Guid.NewGuid()
+            };
+            using var cancelToken = new CancellationTokenSource(TimeSpan.FromSeconds(30));
+            var endpoint = await bus.GetSendEndpoint(Address<Command.SendNotification>()); //send-notification
+            await endpoint.Send(sendNotification, cancelToken.Token);
 
-        //    return Accepted();
-        //}
+            return Accepted();
+        }
 
 
         private static Uri Address<T>()

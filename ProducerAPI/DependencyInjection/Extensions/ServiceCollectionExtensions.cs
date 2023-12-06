@@ -1,5 +1,7 @@
-﻿using MassTransit;
+﻿using Contract.Abstraction.Message;
+using MassTransit;
 using ProducerAPI.DependencyInjection.Options;
+using RabbitMQ.Client;
 
 namespace ProducerAPI.DependencyInjection.Extensions
 {
@@ -20,19 +22,19 @@ namespace ProducerAPI.DependencyInjection.Extensions
                         h.Password(masstransitConfiguration.Password);
                     });
 
-                    //bus.Message<INotification>(e => e.SetEntityName(masstransitConfiguration.ExchangeName));
+                    bus.Message<INotification>(e => e.SetEntityName(masstransitConfiguration.ExchangeName));
 
-                    //bus.Publish<INotification>(e =>
-                    //{
-                    //    e.Durable = true; //Default true
-                    //    e.AutoDelete = false; //Default false
-                    //    e.ExchangeType = ExchangeType.Topic; //Use RabbitMQClient
-                    //});
+                    bus.Publish<INotification>(e =>
+                    {
+                        e.Durable = true; //Default true
+                        e.AutoDelete = false; //Default false
+                        e.ExchangeType = ExchangeType.Topic; //Use RabbitMQClient
+                    });
 
-                    //bus.Send<INotification>(e =>
-                    //{
-                    //    e.UseRoutingKeyFormatter(context => context.Message.Type.ToString());
-                    //});
+                    bus.Send<INotification>(e =>
+                    {
+                        e.UseRoutingKeyFormatter(context => context.Message.Type.ToString());
+                    });
 
                     bus.MessageTopology.SetEntityNameFormatter(new KebabCaseEntityNameFormatter());
                 });
