@@ -1,7 +1,5 @@
 ﻿using MassTransit;
-using MasstTransitRabbitMQ.Contract.IntergrationEvents;
 using ProducerAPI.DependencyInjection.Options;
-using RabbitMQ.Client;
 
 namespace ProducerAPI.DependencyInjection.Extensions
 {
@@ -14,26 +12,29 @@ namespace ProducerAPI.DependencyInjection.Extensions
 
             services.AddMassTransit(mt =>
             {
-                mt.UsingRabbitMq((context, cfg) =>
+                mt.UsingRabbitMq((context, bus) =>
                 {
-                    cfg.Host(masstransitConfiguration.Host, masstransitConfiguration.VHost, h =>
+                    bus.Host(masstransitConfiguration.Host, masstransitConfiguration.VHost, h =>
                     {
                         h.Username(masstransitConfiguration.UserName);
                         h.Password(masstransitConfiguration.Password);
                     });
 
+                    //bus.Message<INotification>(e => e.SetEntityName(masstransitConfiguration.ExchangeName));
 
-                    cfg.Message<DomainEvent.SmsNotification>(x => x.SetEntityName(masstransitConfiguration.ExchangeName));
+                    //bus.Publish<INotification>(e =>
+                    //{
+                    //    e.Durable = true; //Default true
+                    //    e.AutoDelete = false; //Default false
+                    //    e.ExchangeType = ExchangeType.Topic; //Use RabbitMQClient
+                    //});
 
-                    cfg.Publish<DomainEvent.SmsNotification>(x =>
-                    {
-                        x.ExchangeType = ExchangeType.Topic;
-                    });
+                    //bus.Send<INotification>(e =>
+                    //{
+                    //    e.UseRoutingKeyFormatter(context => context.Message.Type.ToString());
+                    //});
 
-                    cfg.Send<DomainEvent.SmsNotification>(e =>
-                    {
-                        e.UseRoutingKeyFormatter(context => context.Message.Type);
-                    });
+                    bus.MessageTopology.SetEntityNameFormatter(new KebabCaseEntityNameFormatter());
                 });
             });
             return services;

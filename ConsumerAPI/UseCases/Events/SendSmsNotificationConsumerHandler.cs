@@ -1,4 +1,4 @@
-﻿using MasstTransitRabbitMQ.Contract.IntergrationEvents;
+﻿using Contract.IntergrationEvents;
 using MediatR;
 
 namespace Services.EmailAPI.UseCases.Events

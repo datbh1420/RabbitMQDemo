@@ -1,18 +1,13 @@
-﻿using MassTransit;
-using MasstTransitRabbitMQ.Contract.IntergrationEvents;
+﻿using ConsumerAPI.Abstraction;
+using Contract.IntergrationEvents;
 using MediatR;
 
 namespace ConsumerAPI.MessageBus.Consumers.Events
 {
-    public class SmsNotificationConsumer : IConsumer<DomainEvent.SmsNotification>
+    public class SmsNotificationConsumer : Consumer<DomainEvent.SmsNotification>
     {
-        private readonly ISender sender;
-
-        public SmsNotificationConsumer(ISender sender)
+        public SmsNotificationConsumer(ISender sender) : base(sender)
         {
-            this.sender = sender;
         }
-        public async Task Consume(ConsumeContext<DomainEvent.SmsNotification> context)
-        => await sender.Send(context.Message);
     }
 }
